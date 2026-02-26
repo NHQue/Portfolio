@@ -1,7 +1,7 @@
 import React from 'react'
-import { projects } from './Projects'
+import { projects } from '../Projects'
 
-export default function OverlayProjects({
+export default function ProjectOverlay({
   onProjectClick,
   selectedProject,
   onClose,
@@ -10,37 +10,20 @@ export default function OverlayProjects({
     .map(([id, data]) => ({ id, ...data }))
     .sort((a, b) => b.year - a.year)
 
-  console.log('Projects List:', projectsList) // Debugging: Check the structure of projectsList
-
   return (
     <div className="full-screen-overlay">
-      <div className="overlay-header">
-        <div className="branding">
-          <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-            <rect x="10.5" y="21" width="9" height="9" fill="#E8B059" />
-            <rect x="10.5" y="10.5" width="9" height="9" fill="#E8B059" />
-            <rect x="0" y="10.5" width="9" height="9" fill="#E8B059" />
-          </svg>
-          <span className="metadata">PROJECT INDEX / 2017 — 2026</span>
-        </div>
-
-        <button className="close-btn" onClick={onClose}>
-          CLOSE ✕
-        </button>
-      </div>
+      {/* Close button — pinned top right */}
+      <button className="close-btn" onClick={onClose}>
+        CLOSE ✕
+      </button>
 
       <div className="content-container">
         <h1 className="section-title">All Projects —</h1>
 
         <div className="projects-grid">
-          {projectsList.map((project, index) => {
+          {projectsList.map((project) => {
             const isSelected = selectedProject === project.id
-
-            // Logic to handle 23 images for 27 projects
-            // This will use Bild1.png through Bild23.png, then restart or stop
-            // const imgNumber = (index % 23) + 1
             const imgPath = `/pics/${project.id}.png`
-            console.log(`Project: ${project.name}, Image Path: ${imgPath}`) // Debugging: Check image paths
 
             return (
               <div
@@ -50,7 +33,6 @@ export default function OverlayProjects({
               >
                 <div className="row-year">{project.year}</div>
 
-                {/* Image Thumbnail */}
                 <div className="row-image">
                   <img
                     src={imgPath}
@@ -88,86 +70,87 @@ export default function OverlayProjects({
           font-family: 'Inter', sans-serif;
           color: #202020;
         }
-        .overlay-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 60px;
-        }
-        .branding {
-          display: flex;
-          align-items: center;
-          gap: 20px;
-        }
-        .metadata {
-          font-size: 9px;
-          font-weight: bold;
-          letter-spacing: 0.1em;
-          opacity: 0.5;
-        }
 
+        /* ── Close button pinned top-right ── */
         .close-btn {
+          position: fixed;
+          top: 24px;
+          right: 32px;
           background: none;
           border: 1px solid #202020;
           padding: 8px 16px;
           font-size: 10px;
           font-weight: bold;
+          letter-spacing: 0.08em;
           cursor: pointer;
+          z-index: 1001;
         }
         .close-btn:hover {
           background: #202020;
           color: #f0f0f0;
         }
 
+        .content-container {
+          margin-top: 20px;
+        }
+
         .section-title {
           font-size: 52px;
           color: #e8b059;
-          margin-bottom: 40px;
+          margin-bottom: 32px;
+        }
+
+        /* ── Grid wrapper — rounded + padded ── */
+        .projects-grid {
+          background: #fff;
+          border-radius: 12px;
+          padding: 8px 24px;
         }
 
         .project-row {
           display: grid;
-          /* Updated columns to include image space */
-          grid-template-columns: 80px 100px 1fr 200px;
+          grid-template-columns: 80px 120px 1fr 200px;
           gap: 20px;
-          padding: 15px 0;
+          padding: 16px 0;
           border-bottom: 1px solid rgba(0, 0, 0, 0.05);
           cursor: pointer;
           align-items: center;
-
           color: #202020;
         }
 
-        .row-image {
-          width: 80px;
-          height: 50px;
-          background: #e0e0e0; /* placeholder color if image fails */
-          overflow: hidden;
-          border-radius: 2px;
-        }
-
-        .row-image img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          // filter: grayscale(0%);
-          transition: filter 0.3s ease;
-        }
-
-        .project-row:hover .row-image img {
-          filter: grayscale(0%);
+        .project-row:last-child {
+          border-bottom: none;
         }
 
         .project-row:hover {
-          opacity: 0.8;
+          opacity: 0.7;
         }
+
         .project-row.active {
           color: #e8b059;
           border-bottom: 1px solid #e8b059;
         }
 
-        .projects-grid {
-          background: #fff;
+        .row-image {
+          width: 100px;
+          height: 70px;
+          background: #ffffff;
+          overflow: hidden;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .row-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          transition: transform 0.3s ease;
+        }
+
+        .project-row:hover .row-image img {
+          transform: scale(1.05);
         }
 
         .row-year {
@@ -175,21 +158,48 @@ export default function OverlayProjects({
           font-size: 14px;
           opacity: 0.4;
         }
+
         .row-name {
           font-size: 18px;
           font-weight: bold;
         }
+
         .row-sub {
           font-size: 11px;
           opacity: 0.6;
           margin-top: 4px;
         }
+
         .row-role {
           font-size: 10px;
           text-align: right;
           text-transform: uppercase;
           letter-spacing: 0.05em;
           opacity: 0.5;
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 640px) {
+          .full-screen-overlay {
+            padding: 40px 20px;
+          }
+          .close-btn {
+            top: 16px;
+            right: 20px;
+          }
+          .projects-grid {
+            padding: 8px 16px;
+            border-radius: 8px;
+          }
+          .project-row {
+            grid-template-columns: 48px 72px 1fr;
+          }
+          .row-role {
+            display: none;
+          }
+          .row-name {
+            font-size: 15px;
+          }
         }
       `}</style>
     </div>

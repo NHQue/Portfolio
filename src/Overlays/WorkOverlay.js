@@ -32,7 +32,7 @@ const jobs = [
 const startY = 310
 const rowHeight = 88
 
-export default function OverlayWork({
+export default function WorkOverlay({
   onJobClick,
   selectedJob,
   onShowProjects,
@@ -195,14 +195,6 @@ export default function OverlayWork({
               VIEW ALL PROJECTS
             </tspan>
           </text>
-
-          {/* Decorative Arrow or Line */}
-          <path
-            d="M150 676.5l4 2.5-4 2.5"
-            stroke="#E8B059"
-            fill="none"
-            strokeWidth={1.5}
-          />
         </g>
       </a.svg>
 

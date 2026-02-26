@@ -82,7 +82,7 @@ export default function Model({ group, color, onPointerDown, onPointerUp }) {
         onPointerUp={onPointerUp}
       >
         <boxGeometry args={[bboxSize.x, bboxSize.y, bboxSize.z]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        <meshBasicMaterial color="#E8B059" wireframe />
       </mesh>
     </a.group>
   )

@@ -3,20 +3,23 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { useSpring } from '@react-spring/core'
 import { a } from '@react-spring/web'
-import Overlay from './Overlay'
-import Scene from './Scene'
-import WorkScene from './WorkScene'
-import ExpertiseScene from './ExpertiseScene'
+
+import HomeOverlay from './Overlays/HomeOverlay'
+import WorkOverlay from './Overlays/WorkOverlay'
+import ExpertiseOverlay from './Overlays/ExpertiseOverlay'
+import ProjectOverlay from './Overlays/ProjectOverlay'
+
+import HomeScene from './Scenes/HomeScene'
+import WorkScene from './Scenes/WorkScene'
+import ExpertiseScene from './Scenes/ExpertiseScene'
+
 import Sidebar from './Sidebar'
-import OverlayWork from './OverlayWork'
-import OverlayExpertise from './OverlayExpertise'
-import OverlayProjects from './OverlayProjects' // Import the new overlay
 import ModelCard from './ModelCard'
 
 export default function App() {
   const [activeSection, setActiveSection] = React.useState(null)
   const [selectedJob, setSelectedJob] = React.useState(null)
-  const [selectedProject, setSelectedProject] = React.useState(null) // New state for project selection
+  const [selectedProject, setSelectedProject] = React.useState(null)
   const [hoveredModel, setHoveredModel] = React.useState(null)
 
   const [{ background, fill }, set] = useSpring(
@@ -32,44 +35,63 @@ export default function App() {
     setSelectedProject((prev) => (prev === projectId ? null : projectId))
   }
 
+  // Determine which 3D scene to render
+  const renderScene = () => {
+    if (activeSection === 'Work' || activeSection === 'Projects') {
+      return (
+        <WorkScene
+          setBg={set}
+          selectedJob={selectedJob}
+          onModelHover={setHoveredModel}
+        />
+      )
+    }
+    if (activeSection === 'Expertise') {
+      return (
+        <ExpertiseScene
+          setBg={set}
+          selectedJob={selectedJob}
+          onModelHover={setHoveredModel}
+          // laptopUrl="https://your-portfolio-site.com"
+        />
+      )
+    }
+    return <HomeScene setBg={set} />
+  }
+
+  const showOrbitControls =
+    activeSection !== 'Work' &&
+    activeSection !== 'Projects' &&
+    activeSection !== 'Expertise'
+
   return (
     <a.main style={{ background }}>
       <Canvas shadows={false} className="canvas" dpr={[1, 2]}>
-        {/* You might want a specific scene for Projects, or reuse WorkScene */}
-        {activeSection === 'Work' || activeSection === 'Projects' ? (
-          <WorkScene
-            setBg={set}
-            selectedJob={selectedJob}
-            onModelHover={setHoveredModel}
-          />
-        ) : (
-          <Scene setBg={set} />
-        )}
-        {activeSection !== 'Work' && activeSection !== 'Projects' && (
-          <OrbitControls />
+        {renderScene()}
+        {showOrbitControls && (
+          <OrbitControls enableZoom={false} enablePan={false} />
         )}
       </Canvas>
 
-      {!activeSection && <Overlay />}
+      {!activeSection && <HomeOverlay />}
 
       {activeSection === 'Work' && (
-        <OverlayWork
+        <WorkOverlay
           onJobClick={handleJobClick}
           selectedJob={selectedJob}
-          onShowProjects={() => setActiveSection('Projects')} // Triggered by your new button
+          onShowProjects={() => setActiveSection('Projects')}
         />
       )}
 
       {activeSection === 'Projects' && (
-        <OverlayProjects
+        <ProjectOverlay
           onProjectClick={handleProjectClick}
           selectedProject={selectedProject}
-          // Clicking "Close" takes you back to the Work view
           onClose={() => setActiveSection('Work')}
         />
       )}
 
-      {activeSection === 'Expertise' && <OverlayExpertise />}
+      {activeSection === 'Expertise' && <ExpertiseOverlay />}
 
       <ModelCard model={hoveredModel} onClose={() => setHoveredModel(null)} />
 

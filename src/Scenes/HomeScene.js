@@ -10,7 +10,7 @@ import {
 } from '@react-three/drei'
 import { useSpring } from '@react-spring/core'
 import { a } from '@react-spring/three'
-import Sculpture from './Sculpture'
+import Sculpture from '../Models/Sculpture'
 
 // React-spring animates native elements, in this case <mesh/> etc,
 // but it can also handle 3rd–party objs, just wrap them in "a".
@@ -97,21 +97,6 @@ export default function Scene({ setBg }) {
         />
       </PerspectiveCamera>
       <Suspense fallback={null}>
-        {/* /<a.mesh
-            ref={sphere}
-            scale={wobble}
-            onPointerOver={() => setHovered(true)}
-            onPointerOut={() => setHovered(false)}
-            onPointerDown={() => setDown(true)}
-            onPointerUp={() => {
-                setDown(false)
-                setMode(!mode)
-                setBg({ background: !mode ? '#202020' : '#f0f0f0', fill: !mode ? '#f0f0f0' : '#202020' })
-            }}>
-            <sphereGeometry args={[1, 64, 64]} />
-            <AnimatedMaterial color={color} envMapIntensity={env} clearcoat={coat} clearcoatRoughness={0} metalness={0.1} />
-        </a.mesh> */}
-        {/* <Sculpture group={sculptureGroup}  />  */}
         <Sculpture
           group={sculptureGroup}
           scale={wobble}
@@ -119,14 +104,14 @@ export default function Scene({ setBg }) {
           onPointerOver={() => setHovered(true)}
           onPointerOut={() => setHovered(false)}
           onPointerDown={() => setDown(true)}
-          onPointerUp={() => {
-            setDown(false)
-            setMode(!mode)
-            setBg({
-              background: !mode ? '#202020' : '#f0f0f0',
-              fill: !mode ? '#f0f0f0' : '#202020',
-            })
-          }}
+          // onPointerUp={() => {
+          //   setDown(false)
+          //   setMode(!mode)
+          //   setBg({
+          //     background: !mode ? '#202020' : '#f0f0f0',
+          //     fill: !mode ? '#f0f0f0' : '#202020',
+          //   })
+          // }}
         />
         <Environment preset="warehouse" />
         <ContactShadows

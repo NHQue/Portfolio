@@ -1,7 +1,7 @@
 import React from 'react'
 import { a } from '@react-spring/web'
 
-export default function Overlay() {
+export default function HomeOverlay() {
   // Just a Figma export, the fill is animated
   return (
     <div className="overlay">

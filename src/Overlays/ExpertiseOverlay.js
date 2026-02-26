@@ -25,7 +25,7 @@ const expertise = [
 const startY = 310
 const rowHeight = 100 // Increased slightly for a more "expert" feel
 
-export default function OverlayExpertise({
+export default function ExpertiseOverlay({
   onExpertiseClick,
   selectedExpertise,
 }) {

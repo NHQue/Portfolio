@@ -8,8 +8,8 @@ import {
 } from '@react-three/drei'
 import { useSpring } from '@react-spring/core'
 import { a } from '@react-spring/three'
-import Torus from './Torus'
-import Model from './Model'
+import Torus from '../Models/Torus'
+import Model from '../Models/Model'
 import { useControls } from 'leva'
 import { OrbitControls } from '@react-three/drei'
 
@@ -170,57 +170,57 @@ const modelMap = new Map([
 
 const modelPositions = []
 
-export default function ExpertiseScene({ setBg, selectedJob, onModelHover }) {
+export default function WorkScene({ setBg, selectedJob, onModelHover }) {
   const light = useRef()
   const cam = useRef()
   const [mode, setMode] = useState(false)
   const [down, setDown] = useState(false)
   const [clickedIndex, setClickedIndex] = useState(null)
 
-  const controls = useControls({
-    positionX: {
-      value: 4.1,
-      min: -25,
-      max: 25,
-      step: 0.1,
-    },
-    positionY: {
-      value: 0.4,
-      min: -25,
-      max: 25,
-      step: 0.1,
-    },
-    positionZ: {
-      value: -1.2,
-      min: -25,
-      max: 25,
-      step: 0.1,
-    },
-    fov: {
-      value: 35,
-      min: 0,
-      max: 100,
-      step: 5,
-    },
-    lookAtX: {
-      value: 0,
-      min: -5,
-      max: 5,
-      step: 0.1,
-    },
-    lookAtY: {
-      value: -0.7,
-      min: -1,
-      max: 1,
-      step: 0.1,
-    },
-    lookAtZ: {
-      value: 0,
-      min: -1,
-      max: 1,
-      step: 0.1,
-    },
-  })
+  // const controls = useControls({
+  //   positionX: {
+  //     value: 4.1,
+  //     min: -25,
+  //     max: 25,
+  //     step: 0.1,
+  //   },
+  //   positionY: {
+  //     value: 0.4,
+  //     min: -25,
+  //     max: 25,
+  //     step: 0.1,
+  //   },
+  //   positionZ: {
+  //     value: -1.2,
+  //     min: -25,
+  //     max: 25,
+  //     step: 0.1,
+  //   },
+  //   fov: {
+  //     value: 35,
+  //     min: 0,
+  //     max: 100,
+  //     step: 5,
+  //   },
+  //   lookAtX: {
+  //     value: 0,
+  //     min: -5,
+  //     max: 5,
+  //     step: 0.1,
+  //   },
+  //   lookAtY: {
+  //     value: -0.7,
+  //     min: -1,
+  //     max: 1,
+  //     step: 0.1,
+  //   },
+  //   lookAtZ: {
+  //     value: 0,
+  //     min: -1,
+  //     max: 1,
+  //     step: 0.1,
+  //   },
+  // })
 
   const { scene } = useGLTF('/GLTFs/Models.glb')
   const torus = scene.getObjectByName('Torus')
@@ -243,7 +243,7 @@ export default function ExpertiseScene({ setBg, selectedJob, onModelHover }) {
     }
   }
 
-  console.log('Loaded models:', allModels) // Log loaded model names
+  // console.log('Loaded models:', allModels) // Log loaded model names
 
   const filteredModels = useMemo(() => {
     if (!selectedJob) return allModels
@@ -286,7 +286,7 @@ export default function ExpertiseScene({ setBg, selectedJob, onModelHover }) {
       initialized.current = true
     }
 
-    console.log('Camera position:', cam.current.position)
+    // console.log('Camera position:', cam.current.position)
 
     if (clickedIndex !== null && !hasMoved.current) {
       const modelPos = modelPositions.find(
@@ -335,6 +335,8 @@ export default function ExpertiseScene({ setBg, selectedJob, onModelHover }) {
         makeDefault
         target={[0, -0.7, 0]}
         position0={[4.1, 0.4, -1.2]}
+        enableZoom={false}
+        enablePan={false}
       />
 
       <a.ambientLight intensity={ambient} />
@@ -420,3 +422,5 @@ export default function ExpertiseScene({ setBg, selectedJob, onModelHover }) {
     </>
   )
 }
+
+useGLTF.preload('/GLTFs/Models.glb')
