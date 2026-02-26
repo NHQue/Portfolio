@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio Website</title>
+
+    <!-- ✅ Import Roboto font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+   <style>
+  
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: "Roboto", sans-serif;
+  background: #ffffff;
+}
+
+/* 3D scene container */
+#root {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 0;
+}
+
+/* Floating sidebar */
+#sidebar {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  height: 80vh;
+  width: 580px;
+  background: rgba(255, 255, 255, 0);
+  padding: 0;
+  z-index: 10;
+  border: #111 solid 1px;
+
+  /* make scrollable */
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  /* scroll snapping - critical for one-box-at-a-time */
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hide scrollbar */
+#sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+#sidebar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Each section takes EXACTLY the sidebar height and snaps */
+.box {
+  border: #111 solid 1px;
+  min-height: 80vh; /* matches sidebar height exactly */
+  height: 80vh;
+  flex-shrink: 0; /* prevents compression */
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+  
+  scroll-snap-align: start; /* snap each box to top */
+  scroll-snap-stop: always; /* force stop at each box */
+  
+  box-sizing: border-box;
+}
+
+#sidebar h1 {
+  margin: 0;
+  font-weight: 500;
+  font-size: 4rem;
+  color: #111;
+}
+
+#sidebar h2 {
+  margin: 0 0 1.5rem 0;
+  font-weight: 500;
+  font-size: 3rem;
+  color: #111;
+}
+
+#sidebar p {
+  font-weight: 300;
+  font-size: 1.1rem;
+  color: #444;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Optional: Add subtle scroll indicator */
+#sidebar::after {
+  content: '↓';
+  position: fixed;
+  bottom: calc(10% + 80vh + 10px);
+  left: calc(10% + 280px);
+  font-size: 2rem;
+  color: #111;
+  opacity: 0.3;
+  animation: bounce 2s infinite;
+  pointer-events: none;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}
+
+</style>
+    <script type="module" crossorigin src="/assets/index-BBqY6seD.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-tn0RQdqM.css">
+  </head>
+  <body>
+    <div id="sidebar">
+      <div id="title" class="box">
+        <h1>Niklas Haschke</h1>
+        <p>
+          Structural Engineer | Computational Designer
+          <br /><br />
+          Use your mouse to orbit and explore the space.
+        </p>
+      </div>
+
+      <div id="work" class="box">
+        <h2>Work</h2>
+        <p>
+          TRAGRAUM Ingenieure PartmbB
+          <br /><br />
+          Spacio AS
+          <br /><br />
+          Bollinger+Grohmann Ingenieure GmbH
+          <br /><br />
+          Werner Sobek AG
+        </p>
+      </div>
+
+      <div id="parametric-design" class="box">
+        <h2>Parametric Design</h2>
+        <p>I am a big fan of Grasshopper.</p>
+      </div>
+
+      <div id="art" class="box">
+        <h2>Art</h2>
+        <p>I am a watercolor artist and weekend warrior.</p>
+      </div>
+
+      <div id="private" class="box">
+        <h2>Private</h2>
+        <p>Vedic Meditator.</p>
+      </div>
+    </div>
+
+    <div id="root"></div>
+
+
+
+    <script>
+      // Dispatch custom event when scroll section changes
+      const sidebar = document.getElementById('sidebar');
+      const boxes = document.querySelectorAll('.box');
+      let currentSection = 0;
+
+      sidebar.addEventListener('scroll', () => {
+        const scrollPosition = sidebar.scrollTop;
+        const boxHeight = boxes[0].offsetHeight;
+        const newSection = Math.round(scrollPosition / boxHeight);
+        
+        if (newSection !== currentSection) {
+          currentSection = newSection;
+          
+          // Dispatch custom event that React can listen to
+          window.dispatchEvent(new CustomEvent('sectionChange', { 
+            detail: { section: currentSection } 
+          }));
+          
+          console.log('📍 Section changed to:', currentSection);
+        }
+      });
+
+      // Optional: Add keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        const currentScroll = sidebar.scrollTop;
+        const boxHeight = boxes[0].offsetHeight;
+        
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          sidebar.scrollTop = currentScroll + boxHeight;
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          sidebar.scrollTop = currentScroll - boxHeight;
+        }
+      });
+    </script>
+  </body>
+</html>
+
