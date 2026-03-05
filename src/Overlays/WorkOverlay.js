@@ -1,7 +1,6 @@
-import React from 'react'
 import { a } from '@react-spring/web'
+import Logo from '../Logo'
 
-// company code maps to job display name
 const jobs = [
   {
     name: 'Werner Sobek',
@@ -36,21 +35,13 @@ export default function WorkOverlay({
   onJobClick,
   selectedJob,
   onShowProjects,
+  onLogoClick,
 }) {
   return (
     <div className="overlay">
       <a.svg viewBox="0 0 583 720" xmlns="http://www.w3.org/2000/svg">
         {/* Logo marks */}
-        <path
-          fill="#E8B059"
-          d="M50.5 61h9v9h-9zM50.5 50.5h9v9h-9zM40 50.5h9v9h-9z"
-        />
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M61 40H50.5v9H61v10.5h9V40h-9z"
-          fill="#E8B059"
-        />
+        <Logo onClick={onLogoClick} />
 
         {/* Top-right metadata */}
         <text

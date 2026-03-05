@@ -7,243 +7,93 @@ import {
   useGLTF,
 } from '@react-three/drei'
 import { useSpring } from '@react-spring/core'
-import { a } from '@react-spring/three'
+import { useSpring as useSpring3, a } from '@react-spring/three'
 import Torus from '../Models/Torus'
 import Model from '../Models/Model'
 import { useControls } from 'leva'
 import { OrbitControls } from '@react-three/drei'
 
-import { useImperativeHandle, forwardRef } from 'react'
+import { projects } from '../Projects'
 
-const modelMap = new Map([
-  [
-    'Busbetriebshof',
-    {
-      name: 'Busbetriebshof',
-      company: 'WS',
-      year: 2017,
-      material: 'Concrete',
-      typology: 'Infrastructure',
-    },
-  ],
-  [
-    'KIA',
-    {
-      name: 'KIA',
-      company: 'WS',
-      year: 2017,
-      material: 'Concrete',
-      typology: 'Infrastructure',
-    },
-  ],
-  [
-    'OneRoof',
-    {
-      name: 'OneRoof',
-      company: 'WS',
-      year: 2018,
-      material: 'Concrete',
-      typology: 'Office',
-    },
-  ],
-  [
-    'RB_Leipzig',
-    {
-      name: 'RB_Leipzig',
-      company: 'BG',
-      year: 2022,
-      material: 'Timber',
-      typology: 'Office',
-    },
-  ],
-  [
-    'Hellerhöfe',
-    {
-      name: 'Hellerhöfe',
-      company: 'BG',
-      year: 2022,
-      material: 'Timber',
-      typology: 'Residential',
-    },
-  ],
-  [
-    'KITA_Mattenberg',
-    {
-      name: 'KITA_Mattenberg',
-      company: 'BG',
-      year: 2022,
-      material: 'Timber',
-      typology: 'Educational',
-    },
-  ],
-  [
-    'Sportpark',
-    {
-      name: 'Sportpark',
-      company: 'TR',
-      year: 2020,
-      material: 'Steel',
-      typology: 'Sports Facility',
-    },
-  ],
-  [
-    'Bienen',
-    {
-      name: 'Bienen',
-      company: 'TR',
-      year: 2020,
-      material: 'Timber',
-      typology: 'Educational',
-    },
-  ],
-  [
-    'AlterHafen',
-    {
-      name: 'AlterHafen',
-      company: 'TR',
-      year: 2024,
-      material: 'Timber',
-      typology: 'Office',
-    },
-  ],
-  [
-    'Löwensaal',
-    {
-      name: 'Löwensaal',
-      company: 'TR',
-      year: 2024,
-      material: 'Timber',
-      typology: 'Event Hall',
-    },
-  ],
-  [
-    'NHR',
-    {
-      name: 'NHR',
-      company: 'TR',
-      year: 2025,
-      material: 'Steel',
-      typology: 'Educational',
-    },
-  ],
-  [
-    'StegÜberVorflut',
-    {
-      name: 'StegÜberVorflut',
-      company: 'TR',
-      year: 2025,
-      material: 'Steel',
-      typology: 'Bridge',
-    },
-  ],
-  [
-    'Wärmespeicher',
-    {
-      name: 'Wärmespeicher',
-      company: 'TR',
-      year: 2025,
-      material: 'Steel',
-      typology: 'Infrastructure',
-    },
-  ],
-  [
-    'Seabridge',
-    {
-      name: 'Seabridge',
-      company: 'TR',
-      year: 2025,
-      material: 'Concrete',
-      typology: 'Bridge',
-    },
-  ],
-  [
-    'ProArbeit',
-    {
-      name: 'ProArbeit',
-      company: 'TR',
-      year: 2026,
-      material: 'Timber',
-      typology: 'Office',
-    },
-  ],
-])
+const modelMap = new Map(Object.entries(projects))
 
-const modelPositions = []
+// Animates a model group to [0, 0.15, 0] when clicked, springs back on deselect
+function AnimatedModel({
+  child,
+  x,
+  z,
+  isClicked,
+  visible,
+  onPointerDown,
+  onPointerUp,
+  interactive,
+}) {
+  const [spring, api] = useSpring3(() => ({
+    position: [x, 0.15, z],
+    config: { mass: 1, tension: 170, friction: 26 },
+  }))
 
-export default function WorkScene({ setBg, selectedJob, onModelHover }) {
+  // useEffect(() => {
+  //   api.start({
+  //     position: isClicked ? [0, 0.225, 0] : [x, 0.15, z],
+  //   })
+  // }, [isClicked, x, z, api])
+
+  // useEffect(() => {
+  //   if (isClicked) {
+  //     api.start({
+  //       position: [0, 0.275, 0],
+  //     })
+  //   } else {
+  //     api.set({ position: [x, 0.15, z] }) // ← instant snap, no animation
+  //   }
+  // }, [isClicked, x, z, api])
+
+  useEffect(() => {
+    if (isClicked) {
+      api.set({ position: [0, 0.225, 0] }) // instant snap
+    } else {
+      api.set({ position: [x, 0.15, z] }) // instant snap
+    }
+  }, [isClicked, x, z, api])
+
+  return (
+    <a.group position={spring.position} visible={visible}>
+      <Model
+        group={child}
+        color={isClicked ? '#E8B059' : '#f5f5f0'}
+        onPointerDown={interactive ? onPointerDown : undefined}
+        onPointerUp={interactive ? onPointerUp : undefined}
+      />
+    </a.group>
+  )
+}
+
+export default function WorkScene({
+  setBg,
+  selectedJob,
+  onModelHover,
+  onResetRef,
+}) {
   const light = useRef()
   const cam = useRef()
+  const orbitRef = useRef()
+  const initialized = useRef(false)
+  const hasMoved = useRef(false)
+  const lerpProgress = useRef(0)
+
   const [mode, setMode] = useState(false)
   const [down, setDown] = useState(false)
   const [clickedIndex, setClickedIndex] = useState(null)
-
-  // const controls = useControls({
-  //   positionX: {
-  //     value: 4.1,
-  //     min: -25,
-  //     max: 25,
-  //     step: 0.1,
-  //   },
-  //   positionY: {
-  //     value: 0.4,
-  //     min: -25,
-  //     max: 25,
-  //     step: 0.1,
-  //   },
-  //   positionZ: {
-  //     value: -1.2,
-  //     min: -25,
-  //     max: 25,
-  //     step: 0.1,
-  //   },
-  //   fov: {
-  //     value: 35,
-  //     min: 0,
-  //     max: 100,
-  //     step: 5,
-  //   },
-  //   lookAtX: {
-  //     value: 0,
-  //     min: -5,
-  //     max: 5,
-  //     step: 0.1,
-  //   },
-  //   lookAtY: {
-  //     value: -0.7,
-  //     min: -1,
-  //     max: 1,
-  //     step: 0.1,
-  //   },
-  //   lookAtZ: {
-  //     value: 0,
-  //     min: -1,
-  //     max: 1,
-  //     step: 0.1,
-  //   },
-  // })
 
   const { scene } = useGLTF('/GLTFs/Models.glb')
   const torus = scene.getObjectByName('Torus')
   const modelGroup = scene.getObjectByName('Models')
   const allModels = modelGroup ? modelGroup.children : []
 
-  const orbitRef = useRef()
+  console.log('GLTF loaded:', allModels)
 
-  // 2. Update handleModelHover to reset camera + orbit target
-  const handleModelHover = (meta) => {
-    if (onModelHover) onModelHover(meta)
-    if (meta === null) {
-      setClickedIndex(null)
-      // Reset camera and orbit controls to initial values
-      if (cam.current && orbitRef.current) {
-        cam.current.position.set(4.1, 0.4, -1.2)
-        orbitRef.current.target.set(0, -0.7, 0)
-        orbitRef.current.update()
-      }
-    }
-  }
-
-  // console.log('Loaded models:', allModels) // Log loaded model names
+  const radius = 0.66
 
   const filteredModels = useMemo(() => {
     if (!selectedJob) return allModels
@@ -253,56 +103,128 @@ export default function WorkScene({ setBg, selectedJob, onModelHover }) {
     })
   }, [allModels, selectedJob])
 
-  // Reset clicked model when job filter changes
+  console.log(
+    'Filtered models:',
+    filteredModels.map((m) => m.name),
+  )
+
+  // FIX: compute positions inside useMemo so they're stable and never accumulate
+  const modelPositions = useMemo(() => {
+    return filteredModels.map((child, i) => {
+      const angle = (i / filteredModels.length) * Math.PI * 2
+      const x = Math.cos(angle) * radius
+      const z = Math.sin(angle) * radius
+      const delta = 0.2
+      const modelCamPosX = Math.cos(angle) * (radius + delta)
+      const modelCamPosZ = Math.sin(angle) * (radius + delta)
+      return { name: child.name, x, z, modelCamPosX, modelCamPosZ }
+    })
+  }, [filteredModels])
+
+  // Camera lerp target ref — set this when a click happens, useFrame smoothly moves toward it
+  const camTarget = useRef({ x: 4.1, y: 0.4, z: -1.2 })
+
+  // const resetCamera = () => {
+  //   console.log('Resetting camera to default position')
+  //   camTarget.current = { x: 4.1, y: 0.4, z: -1.2 }
+  //   lerpProgress.current = 0
+  //   if (orbitRef.current) {
+  //     orbitRef.current.target.set(0, -0.7, 0)
+  //     orbitRef.current.update()
+  //   }
+  // }
+  const resetCamera = () => {
+    if (cam.current) {
+      cam.current.position.set(4.1, 0.4, -1.2)
+      cam.current.fov = 35
+      cam.current.updateProjectionMatrix()
+      cam.current.lookAt(0, -0.8, 0)
+    }
+    if (orbitRef.current) {
+      orbitRef.current.target.set(0, -0.7, 0)
+      orbitRef.current.update()
+    }
+  }
+
+  useEffect(() => {
+    if (onResetRef) {
+      onResetRef.current = () => {
+        setClickedIndex(null)
+        if (onModelHover) onModelHover(null)
+        resetCamera()
+      }
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // FIX: renamed from onModelHover → handleModelSelect to match actual click behaviour
+  const handleModelSelect = (meta) => {
+    console.log('Model selected:', meta)
+    if (onModelHover) onModelHover(meta)
+    if (meta === null) {
+      setClickedIndex(null)
+      resetCamera()
+    }
+  }
+
+  // Reset when filter changes
   useEffect(() => {
     setClickedIndex(null)
     if (onModelHover) onModelHover(null)
-  }, [selectedJob])
-
-  // Set initial position/lookAt once on mount only
-  useEffect(() => {
-    if (cam.current) {
-      // cam.current.position.set(controls.positionX, controls.positionY, controls.positionZ)
-      // cam.current.lookAt(controls.lookAtX, controls.lookAtY, controls.lookAtZ)
-      // cam.current.updateMatrixWorld()
-    }
-  }, []) // empty deps = runs once
+    resetCamera()
+  }, [selectedJob]) // eslint-disable-line react-hooks/exhaustive-deps
+  // note: onModelHover intentionally omitted — callers should memoize it or
+  // wrap in useCallback to avoid stale-closure issues
 
   useEffect(() => {
     hasMoved.current = false
+    lerpProgress.current = 0
   }, [clickedIndex])
 
-  const initialized = useRef(false)
-
-  const hasMoved = useRef(false)
-
-  useFrame((state) => {
+  useFrame((state, delta) => {
     light.current.position.x = state.mouse.x * 20
     light.current.position.y = state.mouse.y * 20
 
-    if (!initialized.current && cam.current) {
-      cam.current.lookAt(0, -0.8, 0)
-      cam.current.updateMatrixWorld()
-      initialized.current = true
-    }
+    // // One-time initialisation lookAt
+    // if (!initialized.current && cam.current) {
+    //   cam.current.lookAt(0, -0.8, 0)
+    //   cam.current.updateMatrixWorld()
+    //   initialized.current = true
+    // }
 
-    // console.log('Camera position:', cam.current.position)
+    // // FIX: smooth lerp camera to target instead of instant snap
+    // if (clickedIndex !== null && !hasMoved.current) {
+    //   const modelPos = modelPositions.find(
+    //     (m) => m.name === filteredModels[clickedIndex]?.name,
+    //   )
+    //   if (modelPos) {
+    //     camTarget.current = {
+    //       x: modelPos.modelCamPosX,
+    //       y: -0.42,
+    //       z: modelPos.modelCamPosZ,
+    //     }
+    //     hasMoved.current = true
+    //     lerpProgress.current = 0
+    //   }
+    // }
 
-    if (clickedIndex !== null && !hasMoved.current) {
-      const modelPos = modelPositions.find(
-        (m) => m.name === filteredModels[clickedIndex].name,
-      )?.position
-      if (modelPos && cam.current) {
-        cam.current.position.set(
-          modelPos.modelCamPosX,
-          -0.82,
-          modelPos.modelCamPosZ,
-        )
-        cam.current.lookAt(0, -0.8, 0)
-        cam.current.updateMatrixWorld()
-        hasMoved.current = true // ✅ now actually persists
-      }
-    }
+    // if (cam.current && lerpProgress.current < 1) {
+    //   lerpProgress.current = Math.min(lerpProgress.current + delta * 2, 1)
+    //   const t = lerpProgress.current
+    //   cam.current.position.x +=
+    //     (camTarget.current.x - cam.current.position.x) * t
+    //   cam.current.position.y +=
+    //     (camTarget.current.y - cam.current.position.y) * t
+    //   cam.current.position.z +=
+    //     (camTarget.current.z - cam.current.position.z) * t
+    //   cam.current.lookAt(0, -0.8, 0)
+    //   cam.current.updateMatrixWorld()
+    // }
+
+    // if (cam.current) {
+    //   const targetFov = clickedIndex !== null ? 15 : 35 // lower = more zoomed
+    //   cam.current.fov += (targetFov - cam.current.fov) * delta * 2
+    //   cam.current.updateProjectionMatrix()
+    // }
   })
 
   const [{ ambient, env }] = useSpring(
@@ -313,22 +235,17 @@ export default function WorkScene({ setBg, selectedJob, onModelHover }) {
     [mode],
   )
 
-  const radius = 0.66
+  // True when no model is selected — all interactions are locked while one is active
+  const sceneInteractive = clickedIndex === null
 
   return (
     <>
       <PerspectiveCamera
         ref={cam}
         makeDefault
-        position={[4.1, 0.4, -1.2]} // hardcode your tweaked initial values
+        position={[4.1, 0.4, -1.2]}
         fov={35}
       />
-
-      {/* <OrbitControls
-        makeDefault
-        target={[0, -0.7, 0]}
-        position0={[4.1, 0.4, -1.2]}
-      /> */}
 
       <OrbitControls
         ref={orbitRef}
@@ -350,65 +267,80 @@ export default function WorkScene({ setBg, selectedJob, onModelHover }) {
       <Suspense fallback={null}>
         <Torus
           group={torus}
-          visible={clickedIndex === null} // ← add this
-          onPointerDown={() => setDown(true)}
-          onPointerUp={() => {
-            setDown(false)
-            setMode(!mode)
-            setBg({
-              background: !mode ? '#202020' : '#f0f0f0',
-              fill: !mode ? '#f0f0f0' : '#202020',
-            })
-          }}
+          visible={sceneInteractive}
+          onPointerDown={sceneInteractive ? () => setDown(true) : undefined}
+          onPointerUp={
+            sceneInteractive
+              ? () => {
+                  setDown(false)
+                  setMode(!mode)
+                  setBg({
+                    background: !mode ? '#202020' : '#f0f0f0',
+                    fill: !mode ? '#f0f0f0' : '#202020',
+                  })
+                }
+              : undefined
+          }
         />
 
-        {filteredModels.map((child, i) => {
-          const angle = (i / filteredModels.length) * Math.PI * 2
-          const x = Math.cos(angle) * radius
-          const z = Math.sin(angle) * radius
+        {/* {filteredModels.map((child, i) => {
+          const pos = modelPositions[i]
+          const { x, z } = pos
           const isClicked = clickedIndex === i
           const meta = modelMap.get(child.name)
 
-          // set a position to the modelMap for the hover card to use
+          // Keep position on modelMap for hover card consumption
           if (meta) {
             modelMap.set(child.name, { ...meta, position: { x, z } })
           }
 
-          const delta = 0.4
-          const modelCamPosX = Math.cos(angle) * (radius + delta)
-          const modelCamPosZ = Math.sin(angle) * (radius + delta)
-
-          modelPositions.push({
-            name: child.name,
-            position: { modelCamPosX, modelCamPosZ },
-          })
-
           return (
-            // <group key={child.uuid} position={[x, 0.15, z]}>
-            <group
+            <AnimatedModel
               key={child.uuid}
-              position={[x, 0.15, z]}
-              visible={clickedIndex === null || clickedIndex === i} // ← add this
-            >
-              <Model
-                group={child}
-                color={isClicked ? '#E8B059' : '#f5f5f0'}
-                onPointerDown={() => setDown(true)}
-                onPointerUp={() => {
-                  setDown(false)
-                  // clicking same model resets, clicking new one shows its card
-                  if (clickedIndex === i) {
-                    setClickedIndex(null)
-                    if (onModelHover) onModelHover(null)
-                  } else {
-                    setClickedIndex(i)
-                    if (onModelHover) onModelHover(meta || null)
-                  }
-                }}
-              />
-            </group>
+              child={child}
+              x={x}
+              z={z}
+              isClicked={isClicked}
+              visible={sceneInteractive || isClicked}
+              interactive={sceneInteractive}
+              onPointerDown={() => {
+                console.log('Model pointer down:', child.name)
+                setDown(true)
+              }}
+              // onPointerUp={() => {
+              //   console.log('Model clicked:', child.name)
+              //   setDown(false)
+              //   if (clickedIndex === i) {
+              //     // Deselect — spring back to original position
+              //     // setClickedIndex(null)
+              //     // handleModelSelect(null)
+              //   } else {
+              //     // Select — spring to center [0, 0.15, 0]
+              //     setClickedIndex(i)
+              //     if (onModelHover) onModelHover(meta || null)
+              //     if (orbitRef.current) orbitRef.current.update()
+              //   }
+              // }}
+              onPointerUp={() => {
+                setDown(false)
+                setClickedIndex(i)
+                if (onModelHover) onModelHover(meta || null)
+                if (cam.current) {
+                  const pos = modelPositions[i]
+                  cam.current.position.set(
+                    pos.modelCamPosX,
+                    -0.42,
+                    pos.modelCamPosZ,
+                  )
+                  cam.current.fov = 15
+                  cam.current.updateProjectionMatrix()
+                  cam.current.lookAt(0, -0.8, 0)
+                }
+                if (orbitRef.current) orbitRef.current.update()
+              }}
+            />
           )
-        })}
+        })} */}
 
         <Environment preset="warehouse" />
         <ContactShadows

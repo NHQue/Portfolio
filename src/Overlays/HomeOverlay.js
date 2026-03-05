@@ -1,12 +1,13 @@
 import React from 'react'
 import { a } from '@react-spring/web'
+import Logo from '../Logo'
 
 export default function HomeOverlay() {
   // Just a Figma export, the fill is animated
   return (
     <div className="overlay">
       <a.svg viewBox="0 0 583 720" xmlns="http://www.w3.org/2000/svg">
-        <path
+        {/* <path
           fill="#E8B059"
           d="M50.5 61h9v9h-9zM50.5 50.5h9v9h-9zM40 50.5h9v9h-9z"
         />
@@ -15,7 +16,10 @@ export default function HomeOverlay() {
           clipRule="evenodd"
           d="M61 40H50.5v9H61v10.5h9V40h-9z"
           fill="#E8B059"
-        />
+        /> */}
+
+        <Logo />
+
         <text
           style={{ whiteSpace: 'pre' }}
           fontFamily="Inter"

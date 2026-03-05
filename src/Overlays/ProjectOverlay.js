@@ -23,7 +23,7 @@ export default function ProjectOverlay({
         <div className="projects-grid">
           {projectsList.map((project) => {
             const isSelected = selectedProject === project.id
-            const imgPath = `/pics/${project.id}.png`
+            const imgPath = `/pictos/${project.id}.png`
 
             return (
               <div

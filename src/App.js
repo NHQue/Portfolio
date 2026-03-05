@@ -8,6 +8,7 @@ import HomeOverlay from './Overlays/HomeOverlay'
 import WorkOverlay from './Overlays/WorkOverlay'
 import ExpertiseOverlay from './Overlays/ExpertiseOverlay'
 import ProjectOverlay from './Overlays/ProjectOverlay'
+import AboutOverlay from './Overlays/AboutOverlay'
 
 import HomeScene from './Scenes/HomeScene'
 import WorkScene from './Scenes/WorkScene'
@@ -20,6 +21,7 @@ export default function App() {
   const [activeSection, setActiveSection] = React.useState(null)
   const [selectedJob, setSelectedJob] = React.useState(null)
   const [selectedProject, setSelectedProject] = React.useState(null)
+  const [selectedExpertise, setSelectedExpertise] = React.useState(null)
   const [hoveredModel, setHoveredModel] = React.useState(null)
 
   const [{ background, fill }, set] = useSpring(
@@ -32,8 +34,15 @@ export default function App() {
   }
 
   const handleProjectClick = (projectId) => {
+    console.log('Project clicked:', projectId)
     setSelectedProject((prev) => (prev === projectId ? null : projectId))
   }
+
+  const handleExpertiseClick = (expertiseId) => {
+    setSelectedExpertise((prev) => (prev === expertiseId ? null : expertiseId))
+  }
+
+  const resetWorkScene = React.useRef(null)
 
   // Determine which 3D scene to render
   const renderScene = () => {
@@ -43,6 +52,7 @@ export default function App() {
           setBg={set}
           selectedJob={selectedJob}
           onModelHover={setHoveredModel}
+          onResetRef={resetWorkScene}
         />
       )
     }
@@ -50,19 +60,20 @@ export default function App() {
       return (
         <ExpertiseScene
           setBg={set}
-          selectedJob={selectedJob}
-          onModelHover={setHoveredModel}
-          // laptopUrl="https://your-portfolio-site.com"
+          selectedExpertise={selectedExpertise}
+          // key={selectedExpertise} // 👈 forces Laptop to remount when expertise changes
         />
       )
     }
+
     return <HomeScene setBg={set} />
   }
 
   const showOrbitControls =
     activeSection !== 'Work' &&
     activeSection !== 'Projects' &&
-    activeSection !== 'Expertise'
+    activeSection !== 'Expertise' &&
+    activeSection !== 'About'
 
   return (
     <a.main style={{ background }}>
@@ -80,6 +91,7 @@ export default function App() {
           onJobClick={handleJobClick}
           selectedJob={selectedJob}
           onShowProjects={() => setActiveSection('Projects')}
+          onLogoClick={() => setActiveSection(null)}
         />
       )}
 
@@ -91,10 +103,29 @@ export default function App() {
         />
       )}
 
-      {activeSection === 'Expertise' && <ExpertiseOverlay />}
+      {activeSection === 'Expertise' && (
+        <ExpertiseOverlay
+          onExpertiseClick={handleExpertiseClick}
+          selectedExpertise={selectedExpertise}
+          onLogoClick={() => setActiveSection(null)}
+        />
+      )}
 
-      <ModelCard model={hoveredModel} onClose={() => setHoveredModel(null)} />
+      {activeSection === 'About' && (
+        <AboutOverlay
+          // onExpertiseClick={handleExpertiseClick}
+          // selectedExpertise={selectedExpertise}
+          onLogoClick={() => setActiveSection(null)}
+        />
+      )}
 
+      <ModelCard
+        model={hoveredModel}
+        onClose={() => {
+          setHoveredModel(null)
+          if (resetWorkScene.current) resetWorkScene.current()
+        }}
+      />
       <Sidebar onNavigate={setActiveSection} activeSection={activeSection} />
     </a.main>
   )

@@ -1,5 +1,6 @@
 import React from 'react'
 import { a } from '@react-spring/web'
+import Logo from '../Logo'
 
 const expertise = [
   {
@@ -15,6 +16,12 @@ const expertise = [
     details: 'Algorithmic approaches to complex forms.',
   },
   {
+    id: 'data_visualization',
+    title: 'Data Visualization',
+    subtitle: 'Grasshopper, Python, FE-Posprocessing',
+    details: 'Transforming complex data into interactive visualizations.',
+  },
+  {
     id: 'coding',
     title: 'Coding',
     subtitle: 'React, Three.js, C#, Python',
@@ -28,21 +35,12 @@ const rowHeight = 100 // Increased slightly for a more "expert" feel
 export default function ExpertiseOverlay({
   onExpertiseClick,
   selectedExpertise,
+  onLogoClick,
 }) {
   return (
     <div className="overlay">
       <a.svg viewBox="0 0 583 720" xmlns="http://www.w3.org/2000/svg">
-        {/* Branding Logo Marks */}
-        <path
-          fill="#E8B059"
-          d="M50.5 61h9v9h-9zM50.5 50.5h9v9h-9zM40 50.5h9v9h-9z"
-        />
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M61 40H50.5v9H61v10.5h9V40h-9z"
-          fill="#E8B059"
-        />
+        <Logo onClick={onLogoClick} />
 
         {/* Metadata */}
         <text
