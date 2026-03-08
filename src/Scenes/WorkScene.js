@@ -283,7 +283,7 @@ export default function WorkScene({
           }
         />
 
-        {/* {filteredModels.map((child, i) => {
+        {filteredModels.map((child, i) => {
           const pos = modelPositions[i]
           const { x, z } = pos
           const isClicked = clickedIndex === i
@@ -340,7 +340,7 @@ export default function WorkScene({
               }}
             />
           )
-        })} */}
+        })}
 
         <Environment preset="warehouse" />
         <ContactShadows
