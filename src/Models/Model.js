@@ -52,6 +52,13 @@ export default function Model({ group, color, onPointerDown, onPointerUp }) {
             roughness={0.6}
             metalness={0.05}
           />
+          {/* <meshPhysicalMaterial
+            color="#c8c4be"
+            roughness={0.85}
+            metalness={0.0}
+            clearcoat={0.1}
+            clearcoatRoughness={0.4}
+          /> */}
         </mesh>
       ))}
 
@@ -62,6 +69,13 @@ export default function Model({ group, color, onPointerDown, onPointerUp }) {
             roughness={0.4}
             metalness={0.8}
           />
+          {/* <meshPhysicalMaterial
+            color="#8a9bb0"
+            roughness={0.15}
+            metalness={0.95}
+            reflectivity={1}
+            envMapIntensity={1.5}
+          /> */}
         </mesh>
       ))}
 
@@ -72,6 +86,13 @@ export default function Model({ group, color, onPointerDown, onPointerUp }) {
             roughness={0.7}
             metalness={0.0}
           />
+          {/* <meshPhysicalMaterial
+            color="#c4965a"
+            roughness={0.75}
+            metalness={0.0}
+            sheen={0.3}
+            sheenColor="#a0622a"
+          /> */}
         </mesh>
       ))}
 

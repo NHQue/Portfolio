@@ -55,8 +55,7 @@ export default function App() {
           onResetRef={resetWorkScene}
         />
       )
-    }
-    if (activeSection === 'Expertise') {
+    } else if (activeSection === 'Expertise') {
       return (
         <ExpertiseScene
           setBg={set}
@@ -64,9 +63,12 @@ export default function App() {
           // key={selectedExpertise} // 👈 forces Laptop to remount when expertise changes
         />
       )
+    } else if (activeSection === 'About') {
+      // Could have a dedicated AboutScene, but for now let's just reuse HomeScene with a different bg color
+      set({ background: '#e0e0e0' })
+    } else {
+      return <HomeScene setBg={set} />
     }
-
-    return <HomeScene setBg={set} />
   }
 
   const showOrbitControls =

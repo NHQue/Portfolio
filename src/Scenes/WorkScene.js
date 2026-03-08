@@ -51,7 +51,7 @@ function AnimatedModel({
 
   useEffect(() => {
     if (isClicked) {
-      api.set({ position: [0, 0.225, 0] }) // instant snap
+      api.set({ position: [0.05, 0.28, 0] }) // instant snap
     } else {
       api.set({ position: [x, 0.15, z] }) // instant snap
     }
@@ -343,6 +343,8 @@ export default function WorkScene({
         })}
 
         <Environment preset="warehouse" />
+        {/* <Environment preset="apartment" /> */}
+
         <ContactShadows
           rotation={[Math.PI / 2, 0, 0]}
           position={[0, -0.99, 0]}
@@ -350,6 +352,15 @@ export default function WorkScene({
           blur={2.5}
           far={1.6}
         />
+        {/* <ContactShadows
+          position={[0, -0.99, 0]}
+          opacity={mode ? 0.75 : 0.65}
+          scale={3}
+          blur={1.2}
+          far={2}
+          resolution={512}
+          color="#000000"
+        /> */}
       </Suspense>
     </>
   )

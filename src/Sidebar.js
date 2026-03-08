@@ -22,7 +22,7 @@ export default function Sidebar({ onNavigate, activeSection, fill }) {
         top: 0,
         right: 0,
         height: '100vh',
-        width: '52px',
+        width: '68px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -62,7 +62,7 @@ export default function Sidebar({ onNavigate, activeSection, fill }) {
                 textOrientation: 'mixed',
                 transform: 'rotate(180deg)',
                 fontFamily: 'Inter, sans-serif',
-                fontSize: '11px',
+                fontSize: '15px',
                 fontWeight: 700,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
@@ -70,7 +70,7 @@ export default function Sidebar({ onNavigate, activeSection, fill }) {
                   hovered === item || activeSection === item
                     ? '#E8B059'
                     : baseColor,
-                padding: '18px 0',
+                padding: '24px 0',
                 transition: 'color 0.25s ease',
                 userSelect: 'none',
                 // Subtle active indicator
@@ -86,14 +86,14 @@ export default function Sidebar({ onNavigate, activeSection, fill }) {
         </nav>
 
         {/* Thin divider line */}
-        <div
+        {/* <div
           style={{
             width: '1px',
             height: '40px',
             background: '#E8B059',
             opacity: 0.4,
           }}
-        />
+        /> */}
 
         {/* Social links */}
         <div
@@ -120,13 +120,13 @@ export default function Sidebar({ onNavigate, activeSection, fill }) {
               onMouseLeave={() => setHovered(null)}
               style={{
                 fontFamily: 'Inter, sans-serif',
-                fontSize: '9px',
+                fontSize: '14px',
                 fontWeight: 700,
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
                 color: hovered === label ? '#E8B059' : baseColor,
                 opacity: hovered === label ? 1 : 0.45,
-                padding: '14px 0',
+                padding: '24px 0',
                 transition: 'color 0.25s ease, opacity 0.25s ease',
                 textDecoration: 'none',
                 userSelect: 'none',
